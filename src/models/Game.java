@@ -25,7 +25,7 @@ public class Game {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Game game = new Game(20, 1);
+        Game game = new Game(1, 20);
         game.action();
         game.action();
         printTable(game);
@@ -176,10 +176,10 @@ public class Game {
                     int finalI = i;
                     while (true) {
                         if (finalI == 0) {
-                            tempTable[finalI][i] = tempTable[j][i];
+                            tempTable[j][finalI] = tempTable[j][i];
                             break;
                         }
-                        if (tempTable[j][finalI] > 0) {
+                        if (tempTable[j][finalI - 1] > 0) {
                             if (tempTable[j][finalI - 1] == tempTable[j][i]) {
                                 finalI--;
                                 tempTable[j][finalI] = 1;
@@ -208,14 +208,14 @@ public class Game {
 
         for (int j = 0; j < row; j++) {
             for (int i = column - 2; i >= 0; i--) {
-                if (tempTable[i][j] > 0) {
+                if (tempTable[j][i] > 0) {
                     int finalI = i;
                     while (true) {
-                        if (finalI == 0) {
-                            tempTable[finalI][i] = tempTable[j][i];
+                        if (finalI == column - 1) {
+                            tempTable[j][finalI] = tempTable[j][i];
                             break;
                         }
-                        if (tempTable[j][finalI] > 0) {
+                        if (tempTable[j][finalI + 1] > 0) {
                             if (tempTable[j][finalI + 1] == tempTable[j][i]) {
                                 finalI++;
                                 tempTable[j][finalI] = 1;
