@@ -17,7 +17,7 @@ public class Game {
     private ArrayList<Pair<Position, Position>> leftOptions = new ArrayList<>();
     private ArrayList<Pair<Position, Position>> rightOptions = new ArrayList<>();
 
-    Game(int row, int column) {
+    public Game(int row, int column) {
         this.row = row;
         this.column = column;
         this.table = new int[row][column];

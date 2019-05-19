@@ -12,7 +12,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage){
+    public void start(Stage primaryStage) {
         Controller.getInstance().start(primaryStage);
     }
 }
