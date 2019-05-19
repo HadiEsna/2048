@@ -4,29 +4,61 @@ import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Game {
     int row, column;
-    private Player player;
+    Random random = new Random();
     private int table[][];
     private boolean lost;
     private int score = 0;
-
     private ArrayList<Pair<Position, Position>> downOptions = new ArrayList<>();
     private ArrayList<Pair<Position, Position>> upOptions = new ArrayList<>();
     private ArrayList<Pair<Position, Position>> leftOptions = new ArrayList<>();
     private ArrayList<Pair<Position, Position>> rightOptions = new ArrayList<>();
 
-    Game(Player player, int row, int column) {
+    Game(int row, int column) {
         this.row = row;
         this.column = column;
-        this.player = player;
         this.table = new int[row][column];
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Game game = new Game(20, 1);
+        game.action();
+        game.action();
+        printTable(game);
+        while (true) {
+            int x = scanner.nextInt();
+            if (x == 8) {
+                game.applychanges(game.upOptions);
+            }
+            if (x == 2) {
+                game.applychanges(game.downOptions);
+            }
+            if (x == 4) {
+                game.applychanges(game.leftOptions);
+            }
+            if (x == 6) {
+                game.applychanges(game.rightOptions);
+            }
+            printTable(game);
+        }
+    }
+
+    private static void printTable(Game game) {
+        for (int i = 0; i < game.row; i++) {
+            for (int j = 0; j < game.column; j++) {
+                System.out.print(" " + game.table[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.println(game.score);
     }
 
     private ArrayList<Position> countEmptyBlocks() {
         ArrayList<Position> emptyBlocks = new ArrayList<>();
-        int num = 0;
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
                 if (table[i][j] == 0)
@@ -36,10 +68,10 @@ public class Game {
         return emptyBlocks;
     }
 
-    public void applychanges(ArrayList<Pair<Position, Position>> changes){
-        for (Pair<Position, Position> pair:changes){
+    public void applychanges(ArrayList<Pair<Position, Position>> changes) {
+        for (Pair<Position, Position> pair : changes) {
             Position destination = pair.getValue();
-            score+=table[destination.getRow()][destination.getColumn()]*2;
+            score += table[destination.getRow()][destination.getColumn()] * 2;
             table[destination.getRow()][destination.getColumn()] += table[pair.getKey().getRow()][pair.getKey().getColumn()];
             table[pair.getKey().getRow()][pair.getKey().getColumn()] = 0;
         }
@@ -47,7 +79,6 @@ public class Game {
     }
 
     public void action() {
-        Random random = new Random();
         ArrayList<Position> emptyBlocks = countEmptyBlocks();
         if (!emptyBlocks.isEmpty()) {
             Position randomBlock = emptyBlocks.get(random.nextInt(emptyBlocks.size()));
@@ -63,51 +94,71 @@ public class Game {
     }
 
 
-
     public ArrayList<Pair<Position, Position>> findUpOptions() {
         ArrayList<Pair<Position, Position>> changes = new ArrayList<>();
-        int[][] tempTable = table.clone();
+        int[][] tempTable = new int[row][column];
+        for (int i = 0; i < column; i++) for (int j = 0; j < row; j++) tempTable[j][i] = table[j][i];
+
         for (int i = 0; i < column; i++) {
             for (int j = 1; j < row; j++) {
                 if (tempTable[j][i] > 0) {
                     int finalJ = j;
                     while (true) {
+                        if (finalJ == 0) {
+                            tempTable[finalJ][i] = tempTable[j][i];
+                            break;
+                        }
+                        if (tempTable[finalJ - 1][i] > 0) {
+                            if (tempTable[finalJ - 1][i] == tempTable[j][i]) {
+                                finalJ--;
+                                tempTable[finalJ][i] = 1;
+                            } else {
+                                tempTable[finalJ][i] = tempTable[j][i];
+                            }
+                            break;
+                        }
                         finalJ--;
-                        if (finalJ <= 0)
-                            break;
-                        if (tempTable[finalJ][i] == 0)
-                            continue;
-                        if (tempTable[finalJ][i] == table[j][i])
-                            break;
                     }
-                    tempTable[finalJ][i] += table[j][i];
-                    table[j][i] = 0;
-                    changes.add(new Pair<>(new Position(j, i), new Position(finalJ, i)));
+                    if (finalJ != j) {
+                        tempTable[j][i] = 0;
+                        changes.add(new Pair<>(new Position(j, i), new Position(finalJ, i)));
+                    }
                 }
             }
         }
         return changes;
     }
 
+
     public ArrayList<Pair<Position, Position>> findDownOptions() {
         ArrayList<Pair<Position, Position>> changes = new ArrayList<>();
-        int[][] tempTable = table.clone();
+        int[][] tempTable = new int[row][column];
+        for (int i = 0; i < column; i++) for (int j = 0; j < row; j++) tempTable[j][i] = table[j][i];
         for (int i = 0; i < column; i++) {
             for (int j = row - 2; j >= 0; j--) {
                 if (tempTable[j][i] > 0) {
                     int finalJ = j;
                     while (true) {
+
+                        if (finalJ == row - 1) {
+                            tempTable[finalJ][i] = tempTable[j][i];
+                            break;
+                        }
+                        if (tempTable[finalJ + 1][i] > 0) {
+                            if (tempTable[finalJ + 1][i] == tempTable[j][i]) {
+                                finalJ++;
+                                tempTable[finalJ][i] = 1;
+                            } else {
+                                tempTable[finalJ][i] = tempTable[j][i];
+                            }
+                            break;
+                        }
                         finalJ++;
-                        if (finalJ == row - 1)
-                            break;
-                        if (tempTable[finalJ][i] == 0)
-                            continue;
-                        if (tempTable[finalJ][i] == table[j][i])
-                            break;
                     }
-                    tempTable[finalJ][i] += table[j][i];
-                    table[j][i] = 0;
-                    changes.add(new Pair<>(new Position(j, i), new Position(finalJ, i)));
+                    if (finalJ != j) {
+                        tempTable[j][i] = 0;
+                        changes.add(new Pair<>(new Position(j, i), new Position(finalJ, i)));
+                    }
                 }
             }
         }
@@ -116,23 +167,33 @@ public class Game {
 
     public ArrayList<Pair<Position, Position>> findLeftOptions() {
         ArrayList<Pair<Position, Position>> changes = new ArrayList<>();
-        int[][] tempTable = table.clone();
+        int[][] tempTable = new int[row][column];
+        for (int i = 0; i < column; i++) for (int j = 0; j < row; j++) tempTable[j][i] = table[j][i];
+
         for (int j = 0; j < row; j++) {
             for (int i = 1; i < column; i++) {
                 if (tempTable[j][i] > 0) {
                     int finalI = i;
                     while (true) {
-                        finalI++;
-                        if (finalI == 0)
+                        if (finalI == 0) {
+                            tempTable[finalI][i] = tempTable[j][i];
                             break;
-                        if (tempTable[j][finalI] == 0)
-                            continue;
-                        if (tempTable[j][finalI] == table[j][i])
+                        }
+                        if (tempTable[j][finalI] > 0) {
+                            if (tempTable[j][finalI - 1] == tempTable[j][i]) {
+                                finalI--;
+                                tempTable[j][finalI] = 1;
+                            } else {
+                                tempTable[j][finalI] = tempTable[j][i];
+                            }
                             break;
+                        }
+                        finalI--;
                     }
-                    tempTable[j][finalI] += table[j][i];
-                    table[j][i] = 0;
-                    changes.add(new Pair<>(new Position(j, i), new Position(j, finalI)));
+                    if (finalI != i) {
+                        tempTable[j][i] = 0;
+                        changes.add(new Pair<>(new Position(j, i), new Position(j, finalI)));
+                    }
                 }
             }
         }
@@ -141,23 +202,34 @@ public class Game {
 
     public ArrayList<Pair<Position, Position>> findRightOptions() {
         ArrayList<Pair<Position, Position>> changes = new ArrayList<>();
-        int[][] tempTable = table.clone();
-        for (int i = 0; i < row; i++) {
-            for (int j = column - 2; j >= 0; j--) {
-                if (table[i][j] > 0) {
+        int[][] tempTable = new int[row][column];
+        for (int i = 0; i < column; i++) for (int j = 0; j < row; j++) tempTable[j][i] = table[j][i];
+
+
+        for (int j = 0; j < row; j++) {
+            for (int i = column - 2; i >= 0; i--) {
+                if (tempTable[i][j] > 0) {
                     int finalI = i;
                     while (true) {
-                        finalI--;
-                        if (finalI == column - 1)
+                        if (finalI == 0) {
+                            tempTable[finalI][i] = tempTable[j][i];
                             break;
-                        if (tempTable[j][finalI] == 0)
-                            continue;
-                        if (tempTable[j][finalI] == table[j][i])
+                        }
+                        if (tempTable[j][finalI] > 0) {
+                            if (tempTable[j][finalI + 1] == tempTable[j][i]) {
+                                finalI++;
+                                tempTable[j][finalI] = 1;
+                            } else {
+                                tempTable[j][finalI] = tempTable[j][i];
+                            }
                             break;
+                        }
+                        finalI++;
                     }
-                    tempTable[j][finalI] += table[j][i];
-                    table[j][i] = 0;
-                    changes.add(new Pair<>(new Position(j, i), new Position(j, finalI)));
+                    if (finalI != i) {
+                        tempTable[j][i] = 0;
+                        changes.add(new Pair<>(new Position(j, i), new Position(j, finalI)));
+                    }
 
                 }
             }
