@@ -1,5 +1,7 @@
 package view;
 
+import controller.Controller;
+import controller.GameController;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -53,6 +55,11 @@ public class MainView extends PView {
         columnSpinner.relocate(160, 100);
         Button button = new Button("enter battle");
         button.relocate(150, 200);
+        button.setOnMousePressed(event -> {
+            Controller.getInstance().setScene(GameController.getInstance());
+            GameController.getInstance().mewGame(MainView.getInstance().getRow(),MainView.getInstance().getColumn());
+
+        });
         root.getChildren().addAll(button, rowSpinner, columnSpinner);
     }
 

@@ -16,6 +16,7 @@ public class Game {
     private ArrayList<Pair<Position, Position>> upOptions = new ArrayList<>();
     private ArrayList<Pair<Position, Position>> leftOptions = new ArrayList<>();
     private ArrayList<Pair<Position, Position>> rightOptions = new ArrayList<>();
+    private ArrayList<Pair<Position, Position>> animations = new ArrayList<>();
 
     public Game(int row, int column) {
         this.row = row;
@@ -47,7 +48,7 @@ public class Game {
         }
     }
 
-    private static void printTable(Game game) {
+    public static void printTable(Game game) {
         for (int i = 0; i < game.row; i++) {
             for (int j = 0; j < game.column; j++) {
                 System.out.print(" " + game.table[i][j]);
@@ -69,6 +70,8 @@ public class Game {
     }
 
     public void applychanges(ArrayList<Pair<Position, Position>> changes) {
+        animations.clear();
+        animations.addAll(changes);
         for (Pair<Position, Position> pair : changes) {
             Position destination = pair.getValue();
             score += table[destination.getRow()][destination.getColumn()] * 2;
@@ -78,11 +81,44 @@ public class Game {
         action();
     }
 
+    public int[][] getTable() {
+        return table;
+    }
+
+    public boolean isLost() {
+        return lost;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public ArrayList<Pair<Position, Position>> getDownOptions() {
+        return downOptions;
+    }
+
+    public ArrayList<Pair<Position, Position>> getUpOptions() {
+        return upOptions;
+    }
+
+    public ArrayList<Pair<Position, Position>> getLeftOptions() {
+        return leftOptions;
+    }
+
+    public ArrayList<Pair<Position, Position>> getRightOptions() {
+        return rightOptions;
+    }
+
+    public ArrayList<Pair<Position, Position>> getAnimations() {
+        return animations;
+    }
+
     public void action() {
         ArrayList<Position> emptyBlocks = countEmptyBlocks();
         if (!emptyBlocks.isEmpty()) {
             Position randomBlock = emptyBlocks.get(random.nextInt(emptyBlocks.size()));
             table[randomBlock.getRow()][randomBlock.getColumn()] += 2;
+            animations.add(new Pair<>(new Position(-1,-1),randomBlock));
         }
         downOptions = findDownOptions();
         upOptions = findUpOptions();
@@ -94,7 +130,7 @@ public class Game {
     }
 
 
-    public ArrayList<Pair<Position, Position>> findUpOptions() {
+    private ArrayList<Pair<Position, Position>> findUpOptions() {
         ArrayList<Pair<Position, Position>> changes = new ArrayList<>();
         int[][] tempTable = new int[row][column];
         for (int i = 0; i < column; i++) for (int j = 0; j < row; j++) tempTable[j][i] = table[j][i];
@@ -130,7 +166,7 @@ public class Game {
     }
 
 
-    public ArrayList<Pair<Position, Position>> findDownOptions() {
+    private ArrayList<Pair<Position, Position>> findDownOptions() {
         ArrayList<Pair<Position, Position>> changes = new ArrayList<>();
         int[][] tempTable = new int[row][column];
         for (int i = 0; i < column; i++) for (int j = 0; j < row; j++) tempTable[j][i] = table[j][i];
@@ -165,7 +201,7 @@ public class Game {
         return changes;
     }
 
-    public ArrayList<Pair<Position, Position>> findLeftOptions() {
+    private ArrayList<Pair<Position, Position>> findLeftOptions() {
         ArrayList<Pair<Position, Position>> changes = new ArrayList<>();
         int[][] tempTable = new int[row][column];
         for (int i = 0; i < column; i++) for (int j = 0; j < row; j++) tempTable[j][i] = table[j][i];
@@ -200,7 +236,7 @@ public class Game {
         return changes;
     }
 
-    public ArrayList<Pair<Position, Position>> findRightOptions() {
+    private ArrayList<Pair<Position, Position>> findRightOptions() {
         ArrayList<Pair<Position, Position>> changes = new ArrayList<>();
         int[][] tempTable = new int[row][column];
         for (int i = 0; i < column; i++) for (int j = 0; j < row; j++) tempTable[j][i] = table[j][i];
