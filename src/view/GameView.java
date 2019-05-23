@@ -27,7 +27,7 @@ public class GameView extends PView {
     private Group root = new Group();
     private Scene scene = new Scene(root, 800, 600);
     private HashMap<Position, Pair<Rectangle, Label>> blocks = new HashMap<>();
-
+    private Label label;
     private int blockWidth, blockH;
 
     private GameView() {
@@ -54,7 +54,7 @@ public class GameView extends PView {
                 Rectangle rectangle = new Rectangle(des.getColumn() + blockWidth / 2, des.getRow() + blockH / 2, 0, 0);
                 int integer = 2;
                 Label label = new Label(Integer.toString(integer));
-                label.relocate(des.getColumn() + blockWidth / 2, des.getRow() + blockH / 2);
+                label.relocate(des.getColumn() + blockWidth / 3, des.getRow() + blockH / 3);
                 label.setTextFill(Color.GHOSTWHITE);
                 root.getChildren().add(rectangle);
                 root.getChildren().add(label);
@@ -63,33 +63,43 @@ public class GameView extends PView {
                 KeyValue rWValue = new KeyValue(rectangle.widthProperty(), blockWidth);
                 KeyValue rXValue = new KeyValue(rectangle.xProperty(), des.getColumn());
                 KeyValue rYValue = new KeyValue(rectangle.yProperty(), des.getRow());
-                KeyFrame keyFrame = new KeyFrame(Duration.millis(1000), rXValue, rYValue, rHValue, rWValue);
+                KeyFrame keyFrame = new KeyFrame(Duration.millis(500), rXValue, rYValue, rHValue, rWValue);
                 Timeline timeline = new Timeline(keyFrame);
                 timeline.play();
-                rectangle.setFill(Color.GRAY);
+                rectangle.setFill(getColor("2"));
                 label.setFont(Font.font(30));
+                rectangle.setArcHeight(5);
+                rectangle.setArcWidth(5);
             } else {
                 int blockScore = 0;
                 Rectangle mainRectangle = blocks.get(change.getKey()).getKey();
                 Label label = blocks.get(change.getKey()).getValue();
                 blocks.remove(change.getKey());
                 blockScore += Integer.parseInt(label.getText());
+                Rectangle other = null;
+                Label otherLabel = null;
                 if (blocks.containsKey(change.getValue())) {
-                    Rectangle rectangle = blocks.get(change.getValue()).getKey();
-                    Label otherLabel = blocks.get(change.getValue()).getValue();
-                    root.getChildren().remove(rectangle);
-                    root.getChildren().remove(otherLabel);
+                    other = blocks.get(change.getValue()).getKey();
+                    otherLabel = blocks.get(change.getValue()).getValue();
                     blockScore += Integer.parseInt(otherLabel.getText());
+                    int x = Integer.parseInt(this.label.getText()) +  blockScore;
+                    this.label.setText(""+x);
                 }
                 KeyValue xValue = new KeyValue(mainRectangle.xProperty(), getPosiotion(change.getValue()).getColumn());
                 KeyValue yValue = new KeyValue(mainRectangle.yProperty(), getPosiotion(change.getValue()).getRow());
-                KeyValue xLValue = new KeyValue(label.layoutXProperty(), getPosiotion(change.getValue()).getColumn() + blockWidth / 2);
-                KeyValue yLValue = new KeyValue(label.layoutYProperty(), getPosiotion(change.getValue()).getRow() + blockH / 2);
+                KeyValue xLValue = new KeyValue(label.layoutXProperty(), getPosiotion(change.getValue()).getColumn() + blockWidth / 3);
+                KeyValue yLValue = new KeyValue(label.layoutYProperty(), getPosiotion(change.getValue()).getRow() + blockH / 3);
                 KeyFrame keyFrame = new KeyFrame(Duration.millis(500), xValue, yValue, xLValue, yLValue);
                 Timeline timeline = new Timeline(keyFrame);
                 timeline.play();
                 int finalBlockScore = blockScore;
+                Rectangle finalOther = other;
+                Label finalOtherLabel = otherLabel;
                 timeline.setOnFinished(event -> {
+                    if (finalOther != null) {
+                        root.getChildren().remove(finalOther);
+                        root.getChildren().remove(finalOtherLabel);
+                    }
                     label.setText(Integer.toString(finalBlockScore));
                     mainRectangle.setFill(getColor(label.getText()));
                 });
@@ -133,8 +143,9 @@ public class GameView extends PView {
         scene.setFill(Color.grayRgb(20));
         Label label = new Label("score:");
         label.relocate(650, 200);
-        Label score = new Label("1");
+        Label score = new Label("0");
         score.relocate(720, 200);
+        this.label = score;
         score.setFont(Font.font("chilanka", FontWeight.BOLD, 17));
         score.setTextFill(Color.GHOSTWHITE);
         label.setTextFill(Color.GHOSTWHITE);
