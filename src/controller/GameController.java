@@ -26,14 +26,10 @@ public class GameController extends P {
         game = new Game(row, column);
         game.action();
         game.action();
-        try {
-            view.animation(game.getAnimations());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        view.animation(game.getAnimations());
         Game.printTable(game);
     }
-
+    private long lastChangeTime = 0;
     @Override
     public Scene getScene() {
         view.reset();
@@ -51,34 +47,31 @@ public class GameController extends P {
         AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                try {
+                if (System.currentTimeMillis() - lastChangeTime > 500) {
                     if (input.contains(KeyCode.UP)) {
                         game.applychanges(game.getUpOptions());
                         Game.printTable(game);
                         view.animation(game.getAnimations());
-                        Thread.sleep(500);
+                        lastChangeTime = System.currentTimeMillis();
                     }
                     if (input.contains(KeyCode.DOWN)) {
                         game.applychanges(game.getDownOptions());
                         Game.printTable(game);
                         view.animation(game.getAnimations());
-                        Thread.sleep(500);
+                        lastChangeTime = System.currentTimeMillis();
                     }
                     if (input.contains(KeyCode.LEFT)) {
                         game.applychanges(game.getLeftOptions());
                         Game.printTable(game);
                         view.animation(game.getAnimations());
-                        Thread.sleep(500);
+                        lastChangeTime = System.currentTimeMillis();
                     }
                     if (input.contains(KeyCode.RIGHT)) {
                         game.applychanges(game.getRightOptions());
                         Game.printTable(game);
                         view.animation(game.getAnimations());
-                        Thread.sleep(500);
-
+                        lastChangeTime = System.currentTimeMillis();
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
         };

@@ -21,6 +21,7 @@ import java.util.HashMap;
 
 
 public class GameView extends PView {
+
     private static GameView ourInstance = new GameView();
     private int row, column;
     private Group root = new Group();
@@ -46,28 +47,26 @@ public class GameView extends PView {
         return scene;
     }
 
-    public void animation(ArrayList<Pair<Position, Position>> changes) throws InterruptedException {
+    public void animation(ArrayList<Pair<Position, Position>> changes) {
         for (Pair<Position, Position> change : changes) {
             if (change.getKey().getColumn() < 0) {
                 Position des = getPosiotion(change.getValue());
-                Rectangle rectangle = new Rectangle(des.getColumn(), des.getRow(), blockWidth, blockH);
+                Rectangle rectangle = new Rectangle(des.getColumn() + blockWidth / 2, des.getRow() + blockH / 2, 0, 0);
                 int integer = 2;
                 Label label = new Label(Integer.toString(integer));
-                label.relocate(des.getColumn() , des.getRow());
+                label.relocate(des.getColumn() + blockWidth / 2, des.getRow() + blockH / 2);
                 label.setTextFill(Color.GHOSTWHITE);
                 root.getChildren().add(rectangle);
                 root.getChildren().add(label);
                 blocks.put(change.getValue(), new Pair<>(rectangle, label));
                 KeyValue rHValue = new KeyValue(rectangle.heightProperty(), blockH);
-                KeyValue rWValue = new KeyValue(rectangle.widthProperty(),  blockWidth);
+                KeyValue rWValue = new KeyValue(rectangle.widthProperty(), blockWidth);
                 KeyValue rXValue = new KeyValue(rectangle.xProperty(), des.getColumn());
                 KeyValue rYValue = new KeyValue(rectangle.yProperty(), des.getRow());
                 KeyFrame keyFrame = new KeyFrame(Duration.millis(1000), rXValue, rYValue, rHValue, rWValue);
                 Timeline timeline = new Timeline(keyFrame);
                 timeline.play();
-                timeline.setOnFinished(event -> {
-
-                });
+                rectangle.setFill(Color.GRAY);
                 label.setFont(Font.font(30));
             } else {
                 int blockScore = 0;
@@ -81,20 +80,50 @@ public class GameView extends PView {
                     root.getChildren().remove(rectangle);
                     root.getChildren().remove(otherLabel);
                     blockScore += Integer.parseInt(otherLabel.getText());
-                    blocks.remove(change.getValue());
                 }
                 KeyValue xValue = new KeyValue(mainRectangle.xProperty(), getPosiotion(change.getValue()).getColumn());
                 KeyValue yValue = new KeyValue(mainRectangle.yProperty(), getPosiotion(change.getValue()).getRow());
                 KeyValue xLValue = new KeyValue(label.layoutXProperty(), getPosiotion(change.getValue()).getColumn() + blockWidth / 2);
                 KeyValue yLValue = new KeyValue(label.layoutYProperty(), getPosiotion(change.getValue()).getRow() + blockH / 2);
-                KeyFrame keyFrame = new KeyFrame(Duration.millis(1000), xValue, yValue, xLValue, yLValue);
+                KeyFrame keyFrame = new KeyFrame(Duration.millis(500), xValue, yValue, xLValue, yLValue);
                 Timeline timeline = new Timeline(keyFrame);
                 timeline.play();
-                label.setText(Integer.toString(blockScore));
+                int finalBlockScore = blockScore;
+                timeline.setOnFinished(event -> {
+                    label.setText(Integer.toString(finalBlockScore));
+                    mainRectangle.setFill(getColor(label.getText()));
+                });
                 blocks.put(change.getValue(), new Pair<>(mainRectangle, label));
 
             }
         }
+    }
+
+    private Color getColor(String text) {
+        if (Integer.parseInt(text) == 2) {
+            return Color.color((double) 120 / 255, (double) 131 / 255, (double) 142 / 255);
+        } else if (Integer.parseInt(text) == 4) {
+            return Color.color((double) 69 / 255, (double) 184 / 255, (double) 172 / 255);
+        } else if (Integer.parseInt(text) == 8) {
+            return Color.color((double) 148 / 255, (double) 96 / 255, (double) 55 / 255);
+        } else if (Integer.parseInt(text) == 16) {
+            return Color.color((double) 200 / 255, 0, (double) 161 / 255);
+        } else if (Integer.parseInt(text) == 32) {
+            return Color.color(1, (double) 181 / 255, (double) 17 / 255);
+        } else if (Integer.parseInt(text) == 64) {
+            return Color.color(0, (double) 175 / 255, (double) 215 / 255);
+        } else if (Integer.parseInt(text) == 128) {
+            return Color.color(0, (double) 132 / 255, (double) 61 / 255);
+        } else if (Integer.parseInt(text) == 256) {
+            return Color.color(1, (double) 105 / 255, 0);
+        } else if (Integer.parseInt(text) == 512) {
+            return Color.color((double) 196 / 255, (double) 214 / 255, 0);
+        } else if (Integer.parseInt(text) == 1024) {
+            return Color.color((double) 55 / 255, (double) 81 / 255, (double) 114 / 255);
+        } else
+            return Color.color((double) 239 / 255, (double) 66 / 255, (double) 111 / 255);
+
+
     }
 
 
