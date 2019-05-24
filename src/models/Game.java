@@ -1,5 +1,6 @@
 package models;
 
+import controller.GameController;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -78,7 +79,8 @@ public class Game {
             table[destination.getRow()][destination.getColumn()] += table[pair.getKey().getRow()][pair.getKey().getColumn()];
             table[pair.getKey().getRow()][pair.getKey().getColumn()] = 0;
         }
-        action();
+        if (!changes.isEmpty())
+            action();
     }
 
     public int[][] getTable() {
@@ -118,7 +120,7 @@ public class Game {
         if (!emptyBlocks.isEmpty()) {
             Position randomBlock = emptyBlocks.get(random.nextInt(emptyBlocks.size()));
             table[randomBlock.getRow()][randomBlock.getColumn()] += 2;
-            animations.add(new Pair<>(new Position(-1,-1),randomBlock));
+            animations.add(new Pair<>(new Position(-1, -1), randomBlock));
         }
         downOptions = findDownOptions();
         upOptions = findUpOptions();
@@ -126,6 +128,7 @@ public class Game {
         rightOptions = findRightOptions();
         if (downOptions.isEmpty() && upOptions.isEmpty() && leftOptions.isEmpty() && rightOptions.isEmpty()) {
             this.lost = true;
+            GameController.getInstance().exit();
         }
     }
 

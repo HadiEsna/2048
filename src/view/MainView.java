@@ -5,12 +5,12 @@ import controller.GameController;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
-import javafx.stage.Popup;
 
 public class MainView extends PView {
     private static MainView ourInstance = new MainView();
@@ -18,7 +18,7 @@ public class MainView extends PView {
     int column = 4;
     private Spinner<Integer> rowSpinner;
     private Spinner<Integer> columnSpinner;
-
+    private Label label;
     private Group root = new Group();
     private Scene scene = new Scene(root, 400, 300);
 
@@ -27,6 +27,14 @@ public class MainView extends PView {
 
     public static MainView getInstance() {
         return ourInstance;
+    }
+
+    public Label getLabel() {
+        return label;
+    }
+
+    public void setLabel(Label label) {
+        this.label = label;
     }
 
     public int getRow() {
@@ -57,9 +65,14 @@ public class MainView extends PView {
         button.relocate(150, 200);
         button.setOnMousePressed(event -> {
             Controller.getInstance().setScene(GameController.getInstance());
-            GameController.getInstance().mewGame(MainView.getInstance().getRow(),MainView.getInstance().getColumn());
+            GameController.getInstance().mewGame(MainView.getInstance().getRow(), MainView.getInstance().getColumn());
 
         });
+        if (label != null) {
+            root.getChildren().add(label);
+            label.relocate(100, 50);
+            label.setTextFill(Color.GHOSTWHITE);
+        }
         root.getChildren().addAll(button, rowSpinner, columnSpinner);
     }
 

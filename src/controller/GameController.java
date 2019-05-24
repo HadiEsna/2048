@@ -2,9 +2,11 @@ package controller;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import models.Game;
 import view.GameView;
+import view.MainView;
 
 import java.util.ArrayList;
 
@@ -12,6 +14,7 @@ public class GameController extends P {
     private static GameController ourInstance = new GameController();
     Game game;
     GameView view = GameView.getInstance();
+    private long lastChangeTime = 0;
 
     private GameController() {
     }
@@ -29,7 +32,7 @@ public class GameController extends P {
         view.animation(game.getAnimations());
         Game.printTable(game);
     }
-    private long lastChangeTime = 0;
+
     @Override
     public Scene getScene() {
         view.reset();
@@ -53,20 +56,17 @@ public class GameController extends P {
                         Game.printTable(game);
                         view.animation(game.getAnimations());
                         lastChangeTime = System.currentTimeMillis();
-                    }
-                    if (input.contains(KeyCode.DOWN)) {
+                    } else if (input.contains(KeyCode.DOWN)) {
                         game.applychanges(game.getDownOptions());
                         Game.printTable(game);
                         view.animation(game.getAnimations());
                         lastChangeTime = System.currentTimeMillis();
-                    }
-                    if (input.contains(KeyCode.LEFT)) {
+                    } else if (input.contains(KeyCode.LEFT)) {
                         game.applychanges(game.getLeftOptions());
                         Game.printTable(game);
                         view.animation(game.getAnimations());
                         lastChangeTime = System.currentTimeMillis();
-                    }
-                    if (input.contains(KeyCode.RIGHT)) {
+                    } else if (input.contains(KeyCode.RIGHT)) {
                         game.applychanges(game.getRightOptions());
                         Game.printTable(game);
                         view.animation(game.getAnimations());
@@ -79,5 +79,10 @@ public class GameController extends P {
 
 
         return scene;
+    }
+
+    public void exit() {
+        MainView.getInstance().setLabel(new Label("you lost :( score: " + game.getScore()));
+        Controller.getInstance().setScene(MainController.getInstance());
     }
 }

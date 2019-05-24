@@ -1,5 +1,8 @@
 package view;
 
+import controller.Controller;
+import controller.GameController;
+import controller.MainController;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -50,7 +53,7 @@ public class GameView extends PView {
     public void animation(ArrayList<Pair<Position, Position>> changes) {
         for (Pair<Position, Position> change : changes) {
             if (change.getKey().getColumn() < 0) {
-                Position des = getPosiotion(change.getValue());
+                Position des = getPosition(change.getValue());
                 Rectangle rectangle = new Rectangle(des.getColumn() + blockWidth / 2, des.getRow() + blockH / 2, 0, 0);
                 int integer = 2;
                 Label label = new Label(Integer.toString(integer));
@@ -63,7 +66,7 @@ public class GameView extends PView {
                 KeyValue rWValue = new KeyValue(rectangle.widthProperty(), blockWidth);
                 KeyValue rXValue = new KeyValue(rectangle.xProperty(), des.getColumn());
                 KeyValue rYValue = new KeyValue(rectangle.yProperty(), des.getRow());
-                KeyFrame keyFrame = new KeyFrame(Duration.millis(500), rXValue, rYValue, rHValue, rWValue);
+                KeyFrame keyFrame = new KeyFrame(Duration.millis(400), rXValue, rYValue, rHValue, rWValue);
                 Timeline timeline = new Timeline(keyFrame);
                 timeline.play();
                 rectangle.setFill(getColor("2"));
@@ -82,14 +85,14 @@ public class GameView extends PView {
                     other = blocks.get(change.getValue()).getKey();
                     otherLabel = blocks.get(change.getValue()).getValue();
                     blockScore += Integer.parseInt(otherLabel.getText());
-                    int x = Integer.parseInt(this.label.getText()) +  blockScore;
-                    this.label.setText(""+x);
+                    int x = Integer.parseInt(this.label.getText()) + blockScore;
+                    this.label.setText("" + x);
                 }
-                KeyValue xValue = new KeyValue(mainRectangle.xProperty(), getPosiotion(change.getValue()).getColumn());
-                KeyValue yValue = new KeyValue(mainRectangle.yProperty(), getPosiotion(change.getValue()).getRow());
-                KeyValue xLValue = new KeyValue(label.layoutXProperty(), getPosiotion(change.getValue()).getColumn() + blockWidth / 3);
-                KeyValue yLValue = new KeyValue(label.layoutYProperty(), getPosiotion(change.getValue()).getRow() + blockH / 3);
-                KeyFrame keyFrame = new KeyFrame(Duration.millis(500), xValue, yValue, xLValue, yLValue);
+                KeyValue xValue = new KeyValue(mainRectangle.xProperty(), getPosition(change.getValue()).getColumn());
+                KeyValue yValue = new KeyValue(mainRectangle.yProperty(), getPosition(change.getValue()).getRow());
+                KeyValue xLValue = new KeyValue(label.layoutXProperty(), getPosition(change.getValue()).getColumn() + blockWidth / 3);
+                KeyValue yLValue = new KeyValue(label.layoutYProperty(), getPosition(change.getValue()).getRow() + blockH / 3);
+                KeyFrame keyFrame = new KeyFrame(Duration.millis(400), xValue, yValue, xLValue, yLValue);
                 Timeline timeline = new Timeline(keyFrame);
                 timeline.play();
                 int finalBlockScore = blockScore;
@@ -151,15 +154,17 @@ public class GameView extends PView {
         label.setTextFill(Color.GHOSTWHITE);
         label.setFont(Font.font("chilanka", FontWeight.BOLD, 17));
         Button exitButton = new Button("exit");
+        exitButton.setOnMousePressed(event -> {
+            GameController.getInstance().exit();
+        });
         exitButton.relocate(690, 450);
-        Button pauseButton = new Button("pause");
-        pauseButton.relocate(690, 400);
+
         Line line = new Line(600, 0, 600, 600);
         line.setFill(Color.GHOSTWHITE);
-        root.getChildren().addAll(label, score, exitButton, pauseButton, line);
+        root.getChildren().addAll(label, score, exitButton, line);
     }
 
-    private Position getPosiotion(Position d) {
+    private Position getPosition(Position d) {
         return new Position(d.getRow() * (600 / row), d.getColumn() * ((600 / column)));
     }
 
