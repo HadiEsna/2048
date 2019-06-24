@@ -83,6 +83,7 @@ public class GameController extends P {
 
     public void exit() {
         MainView.getInstance().setLabel(new Label("you lost :( score: " + game.getScore()));
+        view.clear();
         Controller.getInstance().setScene(MainController.getInstance());
     }
 }

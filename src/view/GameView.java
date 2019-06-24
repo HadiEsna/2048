@@ -34,7 +34,10 @@ public class GameView extends PView {
     private int blockWidth, blockH;
 
     private GameView() {
+    }
 
+    public void clear(){
+        blocks.clear();
     }
 
 
